@@ -22,6 +22,8 @@
 *{box-sizing:border-box}
 html,body{margin:0;min-height:100%;font-family:'SimplerPro',Arial,sans-serif;background:var(--cream);color:var(--blue)}
 button,input{font:inherit}
+.mathLtr{direction:ltr;unicode-bidi:isolate;display:inline-block;font-family:Georgia,'Times New Roman',serif}
+.mathInline{direction:ltr;unicode-bidi:isolate;display:inline-block}
 body{overflow-x:hidden}
 .app{min-height:100vh;background:linear-gradient(180deg,#faf7f1 0,#fff 52%,#faf7f1 100%);padding:14px 22px 24px}
 
@@ -71,7 +73,7 @@ body{overflow-x:hidden}
 .opInput{width:210px;border:2px solid #a9c4e2;border-radius:15px;padding:12px 14px;text-align:center;font-size:28px;font-weight:800;color:var(--blue);direction:ltr;background:#fff}
 .executeBtn{border:0;border-radius:15px;background:var(--burg);color:#fff;padding:13px 30px;font-size:20px;font-weight:900;cursor:pointer}
 .executeBtn:disabled{opacity:.45;cursor:default}
-.helper{font-size:14px;color:#678;direction:rtl;margin-top:-8px;margin-bottom:12px}
+.helper{font-size:14px;color:#678;direction:rtl;margin-top:-8px;margin-bottom:12px;line-height:1.7}
 .helper strong{color:#8a6a19}
 
 .steps{max-width:850px;margin:0 auto;display:flex;flex-direction:column;gap:9px}
@@ -95,6 +97,15 @@ body{overflow-x:hidden}
 .key.wide{grid-column:span 2}
 .footerGoal{text-align:center;margin-top:12px;font-size:15px;font-weight:700;color:#56697c}
 
+.introOverlay{position:fixed;inset:0;background:#17365ed9;display:flex;align-items:center;justify-content:center;z-index:120;padding:20px}
+.introCard{width:min(760px,95%);background:#fff;border-radius:28px;padding:32px 30px 28px;text-align:center;box-shadow:0 20px 70px #0004}
+.introIcon{font-size:58px;line-height:1}
+.introTitle{font-size:34px;font-weight:900;color:var(--burg);margin:8px 0 4px}
+.introSub{font-size:18px;font-weight:700;color:var(--blue);margin-bottom:18px}
+.introList{max-width:560px;margin:0 auto 18px;text-align:right;color:#56697c;font-size:18px;line-height:1.7;font-weight:600}
+.introList li{margin-bottom:4px}
+.introStart{border:0;border-radius:16px;background:var(--blue);color:#fff;padding:14px 30px;font-size:20px;font-weight:900;cursor:pointer}
+.introMini{margin-top:12px;font-size:15px;color:#6f7c89;font-weight:700}
 .overlay{position:fixed;inset:0;background:#17365ed7;display:none;align-items:center;justify-content:center;z-index:100;padding:20px}
 .overlay.show{display:flex}
 .resultCard{width:min(610px,94%);background:#fff;border-radius:26px;padding:30px;text-align:center;box-shadow:0 20px 70px #0004}
@@ -164,12 +175,20 @@ body{overflow-x:hidden}
       <div class="workPanel">
         <div class="equationBox">
           <div id="equation" class="equation">3x + 5 = 20</div>
-          <div class="instruction">איזו פעולה עושים לשני האגפים?</div>
+          <div class="instruction">איזו פעולה מבצעים על שני האגפים?</div>
           <div class="operationRow">
-            <input id="opInput" class="opInput" autocomplete="off" inputmode="text" placeholder="-5">
+            <input id="opInput" class="opInput" autocomplete="off" inputmode="text" placeholder="−5">
             <button id="executeBtn" class="executeBtn">בצע</button>
           </div>
-          <div class="helper">אפשר לכתוב למשל <strong>−5</strong>, <strong>+3</strong>, <strong>−2x</strong>, <strong>/3</strong>, <strong>:3</strong> או <strong>×2</strong></div>
+          <div class="helper">אפשר לכתוב למשל
+    <strong class="mathLtr">−5</strong>,
+    <strong class="mathLtr">+3</strong>,
+    <strong class="mathLtr">−2x</strong>,
+    <strong class="mathLtr">/3</strong>,
+    <strong class="mathLtr">:3</strong>
+    או
+    <strong class="mathLtr">×2</strong>
+    </div>
         </div>
 
         <div id="steps" class="steps"></div>
@@ -193,6 +212,30 @@ body{overflow-x:hidden}
       </div>
     </section>
   </main>
+</div>
+
+<div id="introOverlay" class="introOverlay">
+  <div class="introCard">
+    <div class="introIcon">🏁</div>
+    <div class="introTitle">מרוץ המשוואות</div>
+    <div class="introSub">לפני שמתחילים – כך משחקים</div>
+    <ul class="introList">
+      <li>בכל פעם תופיע <strong>משוואה אחת</strong>.</li>
+      <li>צריך לכתוב בתיבה את <strong>הפעולה שמבצעים על שני האגפים</strong>, למשל:
+      <strong class="mathLtr">−5</strong>,
+      <strong class="mathLtr">+3</strong>,
+      <strong class="mathLtr">−2x</strong>,
+      <strong class="mathLtr">/3</strong>
+      או
+      <strong class="mathLtr">×2</strong>.
+      </li>
+      <li>אחרי כל פעולה נכונה המחשב יציג את <strong>השלב הבא בפתרון</strong>.</li>
+      <li>המטרה היא לפתור <strong>12 משוואות</strong> ולנסות לשפר את הזמן האישי שלך.</li>
+      <li>הזמן יתחיל רק כשתלחץ על <strong>„התחל מרוץ”</strong>.</li>
+    </ul>
+    <button id="startRaceBtn" class="introStart">התחל מרוץ</button>
+    <div class="introMini">אפשר תמיד ללחוץ למעלה על „התחלה מחדש” כדי לפתוח מרוץ חדש.</div>
+  </div>
 </div>
 
 <div id="overlay" class="overlay">
@@ -251,8 +294,9 @@ body{overflow-x:hidden}
   ];
 
   const TOTAL=12;
-  let game=[], idx=0, state=null, history=[], questionStart=0, timerInt=null;
+  let game=[], idx=0, state=null, history=[], actions=[], questionStart=0, timerInt=null;
   let times=[], errors=0, streak=0, bestStreak=0, equationHadError=false;
+  let raceStarted=false;
   let bestEver=Number(localStorage.getItem('prismindEquationBest')||0);
   let bestAverage=Number(localStorage.getItem('prismindEquationAvg')||0);
 
@@ -292,6 +336,24 @@ body{overflow-x:hidden}
 
   function equationText(s){
     return `${sideText(s.a,s.b)} = ${sideText(s.c,s.d)}`;
+  }
+
+  function signedValueText(f, withX=false){
+    const abs = new F(Math.abs(f.n), f.d).text();
+    if(withX){
+      if(f.n === 1 && f.d === 1) return '+x';
+      if(f.n === -1 && f.d === 1) return '−x';
+      return (f.n < 0 ? '−' : '+') + abs + 'x';
+    }
+    return (f.n < 0 ? '−' : '+') + abs;
+  }
+
+  function operationDisplayText(op){
+    if(op.type==='add') return signedValueText(op.value, false);
+    if(op.type==='addx') return signedValueText(op.value, true);
+    if(op.type==='mul') return '×' + op.value.text();
+    if(op.type==='div') return '÷' + op.value.text();
+    return '';
   }
 
   function solved(s){
@@ -398,8 +460,14 @@ body{overflow-x:hidden}
   function renderSteps(){
     stepsEl.innerHTML='';
     history.forEach((s,i)=>{
-      if(i>0){const ar=document.createElement('div');ar.className='arrow';ar.textContent='↓';stepsEl.appendChild(ar)}
-      const d=document.createElement('div');d.className='step '+(i===history.length-1&&solved(s)?'good':'');
+      if(i>0){
+        const trans=document.createElement('div');
+        trans.className='transitionStep';
+        trans.innerHTML=`<span class="transitionArrow">↓</span><span class="transitionAction"><span>לשני האגפים:</span><span class="mathAction">${actions[i] || ''}</span></span><span class="transitionArrow">↓</span>`;
+        stepsEl.appendChild(trans);
+      }
+      const d=document.createElement('div');
+      d.className='step '+(i===history.length-1&&solved(s)?'good':'');
       d.innerHTML=`<span class="stepNum">${i+1}</span>${equationText(s)}`;
       stepsEl.appendChild(d);
     });
@@ -409,6 +477,7 @@ body{overflow-x:hidden}
     const row=game[idx];
     state={a:row[0],b:row[1],c:row[2],d:row[3]};
     history=[state];
+    actions=[null];
     equationEl.textContent=equationText(state);
     opInput.value='';
     feedback.className='feedback';
@@ -469,7 +538,7 @@ body{overflow-x:hidden}
     const op=parseOperation(raw);
     if(!op){
       errors++;equationHadError=true;streak=0;streakEl.textContent='0';
-      showFeedback(false,'לא זיהיתי את הפעולה. נסו למשל ‎−5, ‎−2x, ‎/3 או ×2.');
+      showFeedback(false,'לא זיהיתי את הפעולה. נסו למשל: −5, −2x, /3 או ×2.');
       return;
     }
     const next=applyOperation(state,op);
@@ -481,6 +550,7 @@ body{overflow-x:hidden}
 
     state=next;
     history.push(state);
+    actions.push(operationDisplayText(op));
     equationEl.textContent=equationText(state);
     opInput.value='';
     renderSteps();
@@ -518,12 +588,29 @@ body{overflow-x:hidden}
     q('overlay').classList.add('show');
   }
 
-  function resetGame(){
+  function prepareRace(){
     clearInterval(timerInt);
-    game=makeGame();idx=0;times=[];errors=0;streak=0;bestStreak=0;
+    raceStarted=false;
+    game=makeGame();idx=0;times=[];errors=0;streak=0;bestStreak=0;equationHadError=false;
     streakEl.textContent='0';
+    currentTimeEl.textContent='00:00';
     bestTimeEl.textContent=bestEver?fmtTime(bestEver):'--:--';
+    feedback.className='feedback';
+    feedback.textContent='';
+    stepsEl.innerHTML='';
+    actions=[];
+    equationEl.textContent='3x + 5 = 20';
+    opInput.value='';
+    progressText.textContent='משוואה 1 מתוך 12';
+    progressFill.style.width='0%';
+    progressPct.textContent='0%';
     q('overlay').classList.remove('show');
+    q('introOverlay').style.display='flex';
+  }
+
+  function startRace(){
+    q('introOverlay').style.display='none';
+    raceStarted=true;
     startQuestion();
   }
 
@@ -542,10 +629,11 @@ body{overflow-x:hidden}
     opInput.focus();
   });
 
-  q('restart').addEventListener('click',resetGame);
-  q('again').addEventListener('click',resetGame);
+  q('restart').addEventListener('click',prepareRace);
+  q('again').addEventListener('click',prepareRace);
+  q('startRaceBtn').addEventListener('click',startRace);
 
-  resetGame();
+  prepareRace();
 })();
 </script>
 </body>

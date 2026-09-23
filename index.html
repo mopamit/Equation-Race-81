@@ -37,8 +37,19 @@ body{overflow-x:hidden}
 .headerCenter{text-align:center;direction:rtl}
 .title{margin:0;color:var(--burg);font-size:46px;font-weight:900;line-height:1}
 .subtitle{margin:8px 0 0;font-size:20px;font-weight:700;color:var(--blue)}
-.restart{justify-self:end;direction:rtl;border:1px solid #c8d5e2;background:#fff;color:var(--blue);border-radius:15px;padding:12px 18px;font-weight:800;cursor:pointer;box-shadow:0 4px 12px #17365e0e}
-.restart:hover{border-color:var(--blue)}
+.headerActions{justify-self:end;display:flex;gap:10px;align-items:center;direction:rtl}
+.artBtn{border:0;padding:0;background:transparent;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;position:relative;flex:none}
+.artBtn img{display:block;width:100%;height:100%;object-fit:fill}
+.artBtn:focus-visible{outline:3px solid var(--burg);outline-offset:4px;border-radius:7px}
+.homeBtn{width:62px;height:62px}
+.frameBtn{width:166px;height:58px;color:white;font-weight:800;font-size:19px}
+.frameBtn span{position:absolute;inset:0;display:grid;place-items:center;padding:0 12px;white-space:nowrap}
+.nextRow{display:flex;justify-content:center;margin-top:15px}
+.nextBtn{width:62px;height:62px}
+.nextBtn[hidden],.nextRow[hidden]{display:none}
+.resultActions{display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap}
+.againBtn{width:235px;height:90px}
+.againBtn img{object-fit:contain}
 
 .progressRow{
   max-width:980px;margin:2px auto 16px;display:flex;align-items:center;gap:16px;justify-content:center;
@@ -124,7 +135,7 @@ body{overflow-x:hidden}
 }
 @media(max-width:760px){
   .app{padding:8px} .topbar{grid-template-columns:90px 1fr 90px;min-height:66px} .logo{width:86px} .title{font-size:27px} .subtitle{font-size:13px;margin-top:3px}
-  .restart{font-size:0;padding:8px 10px} .restart::after{content:"↻";font-size:20px}
+  .headerActions{gap:5px} .homeBtn{width:44px;height:44px} .frameBtn{width:92px;height:42px;font-size:13px} .frameBtn span{padding:0 4px} .againBtn{width:190px;height:74px}
   .progressRow{margin-bottom:10px} .progressTrack{max-width:none;width:58vw}
   .layout{grid-template-columns:1fr} .statsPanel{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;padding:8px;order:2}
   .statCard{margin:0;padding:9px 6px} .statIcon{font-size:24px} .statLabel{font-size:13px} .statValue{font-size:22px} .tipCard{display:none}
@@ -142,7 +153,10 @@ body{overflow-x:hidden}
       <h1 class="title">מרוץ המשוואות</h1>
       <p class="subtitle">פותרים משוואות צעד אחר צעד – ומשפרים את הזמן האישי</p>
     </div>
-    <button id="restart" class="restart">↻ התחלה מחדש</button>
+    <div class="headerActions">
+      <button id="home" class="artBtn homeBtn" aria-label="חזרה למסך הבית" title="מסך הבית"><img src="assets/home.png" alt=""></button>
+      <button id="finish" class="artBtn frameBtn" aria-label="סיים משחק"><img src="assets/button-frame.png" alt=""><span>סיים משחק</span></button>
+    </div>
   </header>
 
   <div class="progressRow">
@@ -193,6 +207,7 @@ body{overflow-x:hidden}
 
         <div id="steps" class="steps"></div>
         <div id="feedback" class="feedback"></div>
+        <div id="nextRow" class="nextRow" hidden><button id="nextQuestion" class="artBtn nextBtn" aria-label="לתרגיל הבא" title="לתרגיל הבא"><img src="assets/next.png" alt=""></button></div>
       </div>
 
       <div class="keyboardPanel">
@@ -234,7 +249,7 @@ body{overflow-x:hidden}
       <li>הזמן יתחיל רק כשתלחץ על <strong>„התחל מרוץ”</strong>.</li>
     </ul>
     <button id="startRaceBtn" class="introStart">התחל מרוץ</button>
-    <div class="introMini">אפשר תמיד ללחוץ למעלה על „התחלה מחדש” כדי לפתוח מרוץ חדש.</div>
+    <div class="introMini">אפשר לחזור למסך הבית או לסיים את המשחק מהכפתורים למעלה.</div>
   </div>
 </div>
 
@@ -249,7 +264,10 @@ body{overflow-x:hidden}
       <div class="resultStat"><strong id="fastestTime">00:00</strong>הכי מהיר</div>
       <div class="resultStat"><strong id="mistakes">0</strong>טעויות</div>
     </div>
-    <button id="again" class="resultBtn">מרוץ חדש</button>
+    <div class="resultActions">
+      <button id="again" class="artBtn againBtn" aria-label="התחל מחדש"><img src="assets/restart.png" alt=""></button>
+      <button id="resultHome" class="artBtn homeBtn" aria-label="חזרה למסך הבית" title="מסך הבית"><img src="assets/home.png" alt=""></button>
+    </div>
   </div>
 </div>
 
@@ -473,7 +491,13 @@ body{overflow-x:hidden}
     });
   }
 
+  let awaitingNext=false;
+
   function startQuestion(){
+    awaitingNext=false;
+    q('nextRow').hidden=true;
+    q('executeBtn').disabled=false;
+    opInput.disabled=false;
     const row=game[idx];
     state={a:row[0],b:row[1],c:row[2],d:row[3]};
     history=[state];
@@ -526,14 +550,14 @@ body{overflow-x:hidden}
     }
 
     showFeedback(true,`נפתר! זמן: ${fmtPrecise(sec)}`);
-    setTimeout(()=>{
-      idx++;
-      if(idx>=TOTAL) finishGame();
-      else startQuestion();
-    },900);
+    q('executeBtn').disabled=true;
+    opInput.disabled=true;
+    if(idx+1>=TOTAL) finishGame();
+    else {awaitingNext=true;q('nextRow').hidden=false;q('nextQuestion').focus();}
   }
 
   function execute(){
+    if(!raceStarted || awaitingNext || opInput.disabled) return;
     const raw=opInput.value;
     const op=parseOperation(raw);
     if(!op){
@@ -562,13 +586,20 @@ body{overflow-x:hidden}
 
   function finishGame(){
     clearInterval(timerInt);
-    progressFill.style.width='100%';progressPct.textContent='100%';progressText.textContent=`משוואה ${TOTAL} מתוך ${TOTAL}`;
+    raceStarted=false;
+    awaitingNext=false;
+    q('nextRow').hidden=true;
+    const completed=times.length;
+    const pct=Math.round((completed/TOTAL)*100);
+    progressFill.style.width=pct+'%';progressPct.textContent=pct+'%';progressText.textContent=`נפתרו ${completed} מתוך ${TOTAL} משוואות`;
     const total=times.reduce((a,b)=>a+b,0);
-    const avg=total/times.length;
-    const fastest=Math.min(...times);
+    const avg=completed?total/completed:0;
+    const fastest=completed?Math.min(...times):0;
 
     let comparison='';
-    if(bestAverage===0){
+    if(!completed){
+      comparison='אפשר להתחיל מרוץ חדש בכל רגע.';
+    } else if(bestAverage===0){
       bestAverage=avg;localStorage.setItem('prismindEquationAvg',String(avg));
       comparison='זה המרוץ הראשון שנשמר במכשיר הזה.';
     } else if(avg<bestAverage){
@@ -580,17 +611,21 @@ body{overflow-x:hidden}
     }
 
     q('totalTime').textContent=fmtTime(total);
-    q('avgTime').textContent=fmtPrecise(avg).replace(' שנ׳','s');
-    q('fastestTime').textContent=fmtPrecise(fastest).replace(' שנ׳','s');
+    q('avgTime').textContent=completed?fmtPrecise(avg).replace(' שנ׳','s'):'—';
+    q('fastestTime').textContent=completed?fmtPrecise(fastest).replace(' שנ׳','s'):'—';
     q('mistakes').textContent=errors;
-    q('resultTitle').textContent=errors===0?'מרוץ מושלם!':'סיימת את המרוץ!';
-    q('resultText').textContent=`פתרת 12 משוואות. ${comparison}`;
+    q('resultTitle').textContent=completed===TOTAL?(errors===0?'מרוץ מושלם!':'סיימת את המרוץ!'):'סיימת את המשחק';
+    q('resultText').textContent=`פתרת ${completed} מתוך ${TOTAL} משוואות. ${comparison}`;
     q('overlay').classList.add('show');
   }
 
   function prepareRace(){
     clearInterval(timerInt);
     raceStarted=false;
+    awaitingNext=false;
+    q('nextRow').hidden=true;
+    q('executeBtn').disabled=false;
+    opInput.disabled=false;
     game=makeGame();idx=0;times=[];errors=0;streak=0;bestStreak=0;equationHadError=false;
     streakEl.textContent='0';
     currentTimeEl.textContent='00:00';
@@ -629,7 +664,10 @@ body{overflow-x:hidden}
     opInput.focus();
   });
 
-  q('restart').addEventListener('click',prepareRace);
+  q('home').addEventListener('click',prepareRace);
+  q('resultHome').addEventListener('click',prepareRace);
+  q('finish').addEventListener('click',()=>{if(raceStarted)finishGame()});
+  q('nextQuestion').addEventListener('click',()=>{if(!awaitingNext)return;idx++;startQuestion()});
   q('again').addEventListener('click',prepareRace);
   q('startRaceBtn').addEventListener('click',startRace);
 

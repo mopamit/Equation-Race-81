@@ -152,7 +152,7 @@ body{overflow-x:hidden}
 </style>
 </head>
 <body>
-<audio id="backgroundMusic" src="assets/background-music.mp3" preload="none" loop></audio>
+
 <div class="app">
   <header class="topbar">
     <div class="logoWrap"><img class="logo" src="assets/LOGO%20Prisming.svg" alt="Prisming"></div>
@@ -161,7 +161,7 @@ body{overflow-x:hidden}
       <p class="subtitle">פותרים משוואות צעד אחר צעד – ומשפרים את הזמן האישי</p>
     </div>
     <div class="headerActions">
-      <button id="soundToggle" class="artBtn soundBtn" aria-label="הפעל מוזיקה" title="הפעל מוזיקה" aria-pressed="false"><img src="assets/mute_circle.svg" alt=""></button>
+      <button id="soundToggle" class="artBtn soundBtn" aria-label="השתק צלילים" title="השתק צלילים" aria-pressed="true"><img src="assets/speaker_circle.svg" alt=""></button>
       <button id="home" class="artBtn homeBtn" aria-label="חזרה למסך הבית" title="מסך הבית"><img src="assets/home_circle.svg" alt=""></button>
       <button id="finish" class="artBtn frameBtn" aria-label="סיים משחק"><img src="assets/button_blank_rect.svg" alt=""><span>סיים משחק</span></button>
     </div>
@@ -558,6 +558,7 @@ body{overflow-x:hidden}
     }
 
     showFeedback(true,`נפתר! זמן: ${fmtPrecise(sec)}`);
+    if(idx+1<TOTAL) playSound('correct');
     q('executeBtn').disabled=true;
     opInput.disabled=true;
     if(idx+1>=TOTAL) finishGame();
@@ -571,12 +572,14 @@ body{overflow-x:hidden}
     if(!op){
       errors++;equationHadError=true;streak=0;streakEl.textContent='0';
       showFeedback(false,'לא זיהיתי את הפעולה. נסו למשל: −5, −2x, /3 או ×2.');
+      playSound('wrong');
       return;
     }
     const next=applyOperation(state,op);
     if(!sensible(state,next,op)){
       errors++;equationHadError=true;streak=0;streakEl.textContent='0';
       showFeedback(false,'הפעולה הזו לא מקדמת את הפתרון. נסו פעולה אחרת.');
+      playSound('wrong');
       return;
     }
 
@@ -594,7 +597,6 @@ body{overflow-x:hidden}
 
   function finishGame(){
     clearInterval(timerInt);
-    stopMusic();
     raceStarted=false;
     awaitingNext=false;
     q('nextRow').hidden=true;
@@ -626,11 +628,11 @@ body{overflow-x:hidden}
     q('resultTitle').textContent=completed===TOTAL?(errors===0?'מרוץ מושלם!':'סיימת את המרוץ!'):'סיימת את המשחק';
     q('resultText').textContent=`פתרת ${completed} מתוך ${TOTAL} משוואות. ${comparison}`;
     q('overlay').classList.add('show');
+    if(completed===TOTAL) playSound('finish');
   }
 
   function prepareRace(){
     clearInterval(timerInt);
-    stopMusic();
     raceStarted=false;
     awaitingNext=false;
     q('nextRow').hidden=true;
@@ -653,31 +655,34 @@ body{overflow-x:hidden}
     q('introOverlay').style.display='flex';
   }
 
-  const music=q('backgroundMusic');
-  music.volume=0.24;
-  let soundEnabled=localStorage.getItem('prismindMusicEnabled')!=='false';
+  // שלושת הקבצים ייבחרו מתוך צלילי פריזמה. אין מוזיקת רקע.
+  const SOUND_FILES={correct:'assets/success.mp3',wrong:'assets/error.mp3',finish:'assets/completion.mp3'};
+  const sounds=Object.fromEntries(Object.entries(SOUND_FILES).map(([name,src])=>{
+    const audio=new Audio(src);audio.preload='auto';audio.volume=name==='finish'?0.65:0.5;return [name,audio];
+  }));
+  let soundEnabled=localStorage.getItem('prismindSoundsEnabled') !== 'false' && localStorage.getItem('prismindMusicEnabled') !== 'false';
+  function playSound(name){
+    if(!soundEnabled)return;
+    const audio=sounds[name];if(!audio)return;
+    audio.pause();audio.currentTime=0;audio.play().catch(()=>{});
+  }
   function updateSoundButton(){
     q('soundToggle').querySelector('img').src=soundEnabled?'assets/speaker_circle.svg':'assets/mute_circle.svg';
-    q('soundToggle').setAttribute('aria-label',soundEnabled?'השתק מוזיקה':'הפעל מוזיקה');
-    q('soundToggle').title=soundEnabled?'השתק מוזיקה':'הפעל מוזיקה';
+    q('soundToggle').setAttribute('aria-label',soundEnabled?'השתק צלילים':'הפעל צלילים');
+    q('soundToggle').title=soundEnabled?'השתק צלילים':'הפעל צלילים';
     q('soundToggle').setAttribute('aria-pressed',String(soundEnabled));
   }
-  function playMusic(){
-    if(soundEnabled && raceStarted) music.play().catch(()=>{});
-  }
-  function stopMusic(){music.pause();music.currentTime=0;}
   q('soundToggle').addEventListener('click',()=>{
     soundEnabled=!soundEnabled;
-    localStorage.setItem('prismindMusicEnabled',String(soundEnabled));
+    localStorage.setItem('prismindSoundsEnabled',String(soundEnabled));
+    if(!soundEnabled)Object.values(sounds).forEach(audio=>{audio.pause();audio.currentTime=0});
     updateSoundButton();
-    if(soundEnabled)playMusic();else music.pause();
   });
   updateSoundButton();
 
   function startRace(){
     q('introOverlay').style.display='none';
     raceStarted=true;
-    playMusic();
     startQuestion();
   }
 

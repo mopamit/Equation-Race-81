@@ -44,9 +44,17 @@ body{overflow-x:hidden}
 .homeBtn,.soundBtn{width:62px;height:62px}
 .frameBtn{width:166px;height:58px;color:white;font-weight:800;font-size:19px}
 .frameBtn span{position:absolute;inset:0;display:grid;place-items:center;padding:0 12px;white-space:nowrap}
-.nextRow{display:flex;justify-content:center;margin-top:15px}
-.nextBtn{width:62px;height:62px}
-.nextBtn[hidden],.nextRow[hidden]{display:none}
+.nextRow{display:none;margin:18px auto 6px;max-width:680px;padding:18px 20px;background:#f2faf4;border:2px solid #6db580;border-radius:18px;box-shadow:0 8px 22px rgba(23,54,94,.10);direction:rtl}
+.nextRow.visible{display:flex!important;align-items:center;justify-content:space-between;gap:18px}
+.nextSolvedText{display:flex;flex-direction:column;gap:3px;color:#17365e;text-align:right}
+.nextSolvedText strong{font-size:20px;color:#477d57}
+.nextSolvedText span{font-size:15px;font-weight:700}
+.nextBtn{width:220px;height:68px;color:white;font-weight:900;font-size:20px;filter:drop-shadow(0 6px 12px rgba(23,54,94,.16));flex:none}
+.nextBtn>img{position:absolute;inset:0;width:100%;height:100%;object-fit:fill}
+.nextBtn>span{position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:10px;width:100%;height:100%;padding:0 22px}
+.nextBtn .nextArrow{font-size:27px;line-height:1;font-family:Arial,sans-serif}
+.nextBtn:hover{transform:translateY(-1px)}
+@media(max-width:700px){.nextRow.visible{flex-direction:column;text-align:center}.nextSolvedText{text-align:center}.nextBtn{width:min(100%,240px)}}
 .resultActions{display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap}
 .againBtn{width:235px;height:90px}
 .againBtn img{object-fit:contain}
@@ -102,6 +110,12 @@ body{overflow-x:hidden}
 .feedback.show{opacity:1}
 .feedback.good{color:#3c8152}
 .feedback.bad{color:var(--burg)}
+.feedback.warn{color:#a36f1f}
+.efficiencyRow{display:flex;justify-content:center;align-items:center;gap:12px;flex-wrap:wrap;margin:8px auto 16px;direction:rtl}
+.minMoveText,.moveCounter{background:#f5f8fb;border:1px solid #dbe5ee;border-radius:12px;padding:8px 13px;color:var(--blue);font-size:16px;font-weight:800}
+.moveCounter strong{font-size:19px;color:var(--burg)}
+.moveCounter.over{background:#fff7e9;border-color:#e7b976;color:#805c20}
+.moveCounter.over strong{color:#a36f1f}
 
 .keyboardPanel{margin-top:18px;background:#fff;border:1px solid #dce7f1;border-radius:24px;padding:14px 18px 16px;box-shadow:0 12px 28px #17365e0a}
 .keyboardTitle{font-size:18px;font-weight:800;margin-bottom:10px}
@@ -129,17 +143,19 @@ body{overflow-x:hidden}
 .resultIcon{font-size:60px}
 .resultTitle{font-size:32px;font-weight:900;color:var(--burg);margin-top:3px}
 .resultText{font-size:18px;line-height:1.5;color:#5a6877}
-.resultGrid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:18px 0 20px}
+.resultGrid{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:18px 0 20px}
 .resultStat{background:#f4f7f9;border-radius:14px;padding:10px}
 .resultStat strong{display:block;font-size:25px;color:var(--blue);direction:ltr}
 .resultBtn{border:0;border-radius:14px;background:var(--blue);color:#fff;padding:12px 24px;font-size:18px;font-weight:800;cursor:pointer}
 
 @media(max-width:1000px){
+  .resultGrid{grid-template-columns:repeat(3,1fr)}
   .topbar{grid-template-columns:250px 1fr 250px} .logo{width:138px} .title{font-size:36px} .subtitle{font-size:16px}
   .layout{grid-template-columns:230px minmax(0,1fr)} .statsPanel{padding:12px} .statValue{font-size:28px}
   .keyboard{grid-template-columns:repeat(5,1fr)} .key.confirm,.key.clear,.key.wide{grid-column:span 1}
 }
 @media(max-width:760px){
+  .resultGrid{grid-template-columns:repeat(2,1fr)}
   .app{padding:8px} .topbar{grid-template-columns:1fr 1fr;min-height:100px;row-gap:4px} .headerCenter{grid-column:1 / -1;grid-row:2} .logo{width:86px} .title{font-size:27px} .subtitle{font-size:13px;margin-top:3px}
   .headerActions{gap:5px} .homeBtn,.soundBtn{width:44px;height:44px} .frameBtn{width:92px;height:42px;font-size:13px} .frameBtn span{padding:0 4px} .againBtn{width:190px;height:74px}
   .progressRow{margin-bottom:10px} .progressTrack{max-width:none;width:58vw}
@@ -158,7 +174,7 @@ body{overflow-x:hidden}
     <div class="logoWrap"><img class="logo" src="assets/LOGO%20Prisming.svg" alt="Prisming"></div>
     <div class="headerCenter">
       <h1 class="title">מרוץ המשוואות</h1>
-      <p class="subtitle">פותרים משוואות צעד אחר צעד – ומשפרים את הזמן האישי</p>
+      <p class="subtitle">פותרים משוואות במהירות – ובמספר המהלכים הקטן ביותר</p>
     </div>
     <div class="headerActions">
       <button id="soundToggle" class="artBtn soundBtn" aria-label="השתק צלילים" title="השתק צלילים" aria-pressed="true"><img src="assets/speaker_circle.svg" alt=""></button>
@@ -177,7 +193,7 @@ body{overflow-x:hidden}
     <aside class="statsPanel">
       <div class="statCard time">
         <div class="statIcon"><img src="assets/clock_circle.svg" alt=""></div>
-        <div class="statLabel">זמן נוכחי</div>
+        <div class="statLabel">זמן כולל</div>
         <div id="currentTime" class="statValue">00:00</div>
       </div>
       <div class="statCard best">
@@ -187,16 +203,17 @@ body{overflow-x:hidden}
       </div>
       <div class="statCard streak">
         <div class="statIcon"><img src="assets/streak_flame_circle.svg" alt=""></div>
-        <div class="statLabel">רצף ללא טעות</div>
+        <div class="statLabel">רצף פתרונות יעילים</div>
         <div id="streak" class="statValue">0</div>
       </div>
-      <div class="tipCard">כל צעד נכון מקרב אותך לפתרון — והזמן הוא רק מול עצמך.</div>
+      <div class="tipCard">המטרה: לפתור מהר, אבל גם בדרך הקצרה והיעילה ביותר.</div>
     </aside>
 
     <section class="mainCol">
       <div class="workPanel">
         <div class="equationBox">
           <div id="equation" class="equation">3x + 5 = 20</div>
+          <div class="efficiencyRow"><div id="minMoveText" class="minMoveText">אפשר לפתור ב־2 מהלכים</div><div id="moveCounter" class="moveCounter">מהלכים: <strong>0</strong> / 2</div></div>
           <div class="instruction">איזו פעולה מבצעים על שני האגפים?</div>
           <div class="operationRow">
             <input id="opInput" class="opInput" autocomplete="off" inputmode="text" placeholder="−5">
@@ -213,9 +230,18 @@ body{overflow-x:hidden}
     </div>
         </div>
 
-        <div id="steps" class="steps"></div>
         <div id="feedback" class="feedback"></div>
-        <div id="nextRow" class="nextRow" hidden><button id="nextQuestion" class="artBtn nextBtn" aria-label="לתרגיל הבא" title="לתרגיל הבא"><img src="assets/nav_forward_circle.svg" alt=""></button></div>
+        <div id="nextRow" class="nextRow" aria-hidden="true">
+          <div class="nextSolvedText">
+            <strong>התרגיל נפתר — הזמן נעצר</strong>
+            <span>עברו על דרך הפתרון, וכשתהיו מוכנים המשיכו.</span>
+          </div>
+          <button type="button" id="nextQuestion" class="artBtn nextBtn" aria-label="לתרגיל הבא" title="לתרגיל הבא">
+            <img src="assets/button_blank_rect.svg" alt="">
+            <span><span id="nextQuestionText">לתרגיל הבא</span><span class="nextArrow" aria-hidden="true">←</span></span>
+          </button>
+        </div>
+        <div id="steps" class="steps"></div>
       </div>
 
       <div class="keyboardPanel">
@@ -231,7 +257,7 @@ body{overflow-x:hidden}
           <button class="key" data-k="1">1</button><button class="key" data-k="2">2</button><button class="key" data-k="3">3</button>
           <button class="key" data-k="0">0</button>
         </div>
-        <div class="footerGoal">המטרה: לפתור 12 משוואות ולנסות לשפר את הזמן שלך</div>
+        <div class="footerGoal">המטרה: לפתור 12 משוואות מהר ובמינימום מהלכים</div>
       </div>
     </section>
   </main>
@@ -253,7 +279,9 @@ body{overflow-x:hidden}
       <strong class="mathLtr">×2</strong>.
       </li>
       <li>אחרי כל פעולה נכונה המחשב יציג את <strong>השלב הבא בפתרון</strong>.</li>
-      <li>המטרה היא לפתור <strong>12 משוואות</strong> ולנסות לשפר את הזמן האישי שלך.</li>
+      <li>לכל משוואה יוצג <strong>מספר המהלכים המינימלי</strong> שבו אפשר לפתור אותה.</li>
+      <li>פעולה אלגברית חוקית לא תיחשב טעות, אבל אם תבחר דרך ארוכה יותר המשחק יציין שאפשר היה לפתור בפחות מהלכים.</li>
+      <li>המטרה היא לפתור <strong>12 משוואות</strong> גם מהר וגם בדרך היעילה ביותר.</li>
       <li>הזמן יתחיל רק כשתלחץ על <strong>„התחל מרוץ”</strong>.</li>
     </ul>
     <button id="startRaceBtn" class="artBtn startBtn" aria-label="התחל מרוץ"><img src="assets/button_start_rect.svg" alt=""></button>
@@ -270,6 +298,7 @@ body{overflow-x:hidden}
       <div class="resultStat"><strong id="totalTime">00:00</strong>זמן כולל</div>
       <div class="resultStat"><strong id="avgTime">00:00</strong>ממוצע</div>
       <div class="resultStat"><strong id="fastestTime">00:00</strong>הכי מהיר</div>
+      <div class="resultStat"><strong id="optimalCount">0</strong>במינימום מהלכים</div>
       <div class="resultStat"><strong id="mistakes">0</strong>טעויות</div>
     </div>
     <div class="resultActions">
@@ -298,30 +327,140 @@ body{overflow-x:hidden}
   }
   const toF=x=>x instanceof F?x:new F(x,1);
 
+  // מאגר של 100 משוואות בחמש דרגות קושי.
+  // כל שאלה נשמרת כ־[a,b,c,d] עבור ax+b=cx+d.
   const LEVELS = [
-    // easy: one step
+    // רמה 1 — 20 שאלות
     [
-      [1,7,0,15], [1,-5,0,8], [3,0,0,18], [4,0,0,28],
-      [1,9,0,20], [1,-8,0,4], [5,0,0,35], [6,0,0,42],
-      [1,12,0,25], [1,-11,0,7], [7,0,0,49], [8,0,0,64]
+      [1,3,0,7],
+      [1,-4,0,3],
+      [1,5,0,2],
+      [1,-6,0,0],
+      [1,7,0,2],
+      [1,-8,0,0],
+      [1,9,0,11],
+      [1,-10,0,-14],
+      [1,11,0,20],
+      [1,-12,0,-7],
+      [2,0,0,6],
+      [3,0,0,-12],
+      [4,0,0,20],
+      [5,0,0,30],
+      [6,0,0,-12],
+      [7,0,0,49],
+      [8,0,0,-40],
+      [9,0,0,36],
+      [10,0,0,80],
+      [11,0,0,-33]
     ],
-    // medium: two steps
+    // רמה 2 — 20 שאלות
     [
-      [3,5,0,20], [4,-7,0,21], [5,6,0,31], [2,-9,0,13],
-      [6,4,0,40], [7,-5,0,30], [8,3,0,43], [9,-8,0,37],
-      [3,-11,0,10], [5,-9,0,26], [4,13,0,41], [6,-7,0,29]
+      [2,5,0,17],
+      [3,-7,0,14],
+      [4,6,0,26],
+      [5,-9,0,31],
+      [6,4,0,40],
+      [7,-5,0,30],
+      [8,3,0,35],
+      [9,-8,0,55],
+      [3,-11,0,16],
+      [4,13,0,41],
+      [5,-9,0,36],
+      [6,7,0,43],
+      [7,-6,0,43],
+      [8,10,0,50],
+      [9,-4,0,50],
+      [2,12,0,30],
+      [4,-15,0,17],
+      [6,11,0,41],
+      [8,-7,0,49],
+      [5,14,0,34]
     ],
-    // advanced: x on both sides
+    // רמה 3 — 20 שאלות
     [
-      [5,4,2,19], [4,7,1,19], [7,-3,3,17], [6,5,2,29],
-      [8,-4,5,17], [9,3,6,24], [5,-8,1,12], [7,6,4,24],
-      [6,-9,2,11], [8,7,3,32], [9,-5,4,20], [10,2,6,22]
+      [-2,5,0,17],
+      [3,-7,0,-28],
+      [-4,-6,0,-26],
+      [5,9,0,-31],
+      [-6,4,0,-32],
+      [7,-5,0,-40],
+      [-8,3,0,-29],
+      [9,8,0,-55],
+      [-3,-11,0,-38],
+      [4,-13,0,-41],
+      [-5,9,0,-31],
+      [6,7,0,-29],
+      [-7,6,0,-43],
+      [8,-10,0,-50],
+      [-9,-4,0,-58],
+      [2,12,0,-6],
+      [-4,15,0,-17],
+      [6,-11,0,-41],
+      [-8,7,0,-49],
+      [5,-14,0,-34]
+    ],
+    // רמה 4 — 20 שאלות
+    [
+      [3,4,2,9],
+      [4,-2,3,5],
+      [5,6,4,3],
+      [6,-5,5,-1],
+      [3,7,1,-5],
+      [5,-4,2,20],
+      [7,3,4,18],
+      [8,-6,5,15],
+      [4,9,2,1],
+      [6,-7,3,11],
+      [7,5,5,-5],
+      [9,-3,6,9],
+      [5,8,3,-6],
+      [8,-5,6,5],
+      [6,11,4,5],
+      [10,-8,7,4],
+      [9,6,5,-18],
+      [7,-9,3,19],
+      [8,12,4,-8],
+      [11,-10,8,-1]
+    ],
+    // רמה 5 — 20 שאלות
+    [
+      [-5,7,3,39],
+      [7,-9,-2,45],
+      [-8,11,-3,-14],
+      [9,-12,4,-42],
+      [-10,-7,2,-103],
+      [12,13,5,-22],
+      [-9,-15,-4,-50],
+      [14,-11,6,21],
+      [-12,9,3,129],
+      [15,-13,7,27],
+      [11,16,-5,-96],
+      [-14,10,-6,-38],
+      [13,-17,8,-37],
+      [-16,-9,5,-156],
+      [18,12,7,-43],
+      [-15,-20,4,-172],
+      [17,10,-8,160],
+      [-18,13,-7,79],
+      [16,-12,9,23],
+      [-20,-14,6,168]
     ]
+  ];
+
+  // דפוסי הקושי אינם עולים באופן קבוע: יש עליות, ירידות וקפיצות.
+  const DIFFICULTY_PATTERNS = [
+    [1,2,4,3,5,2,4,1,3,5,4,2],
+    [1,3,2,5,3,4,2,4,1,5,3,4],
+    [2,1,4,3,5,2,3,5,1,4,2,5],
+    [1,2,5,3,4,2,5,1,4,3,5,2],
+    [2,3,1,4,5,3,2,5,4,1,3,5],
+    [1,4,2,3,5,2,4,3,1,5,2,4]
   ];
 
   const TOTAL=12;
   let game=[], idx=0, state=null, history=[], actions=[], questionStart=0, timerInt=null;
-  let times=[], errors=0, streak=0, bestStreak=0, equationHadError=false;
+  let activeElapsedMs=0, activeSegmentStart=null;
+  let times=[], errors=0, streak=0, bestStreak=0, equationHadError=false, optimalCount=0, currentMinMoves=0;
   let raceStarted=false;
   let bestEver=Number(localStorage.getItem('prismindEquationBest')||0);
   let bestAverage=Number(localStorage.getItem('prismindEquationAvg')||0);
@@ -329,15 +468,28 @@ body{overflow-x:hidden}
   const q=id=>document.getElementById(id);
   const equationEl=q('equation'), stepsEl=q('steps'), feedback=q('feedback'), opInput=q('opInput');
   const currentTimeEl=q('currentTime'), bestTimeEl=q('bestTime'), streakEl=q('streak');
+  const minMoveText=q('minMoveText'), moveCounter=q('moveCounter');
   const progressText=q('progressText'), progressFill=q('progressFill'), progressPct=q('progressPct');
 
   function shuffle(a){const x=a.slice();for(let i=x.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[x[i],x[j]]=[x[j],x[i]]}return x}
 
   function makeGame(){
-    const easy=shuffle(LEVELS[0]).slice(0,4);
-    const med=shuffle(LEVELS[1]).slice(0,4);
-    const adv=shuffle(LEVELS[2]).slice(0,4);
-    return [...easy,...med,...adv].map(r=>r.map(v=>new F(v)));
+    const pattern=DIFFICULTY_PATTERNS[Math.floor(Math.random()*DIFFICULTY_PATTERNS.length)];
+    const pools=LEVELS.map(level=>shuffle(level));
+    const used=new Set();
+    return pattern.map(difficulty=>{
+      const pool=pools[difficulty-1];
+      let row;
+      while(pool.length){
+        const candidate=pool.pop();
+        const sig=candidate.join(',');
+        if(!used.has(sig)){row=candidate;used.add(sig);break;}
+      }
+      if(!row) throw new Error('Question pool exhausted');
+      const values=row.map(v=>new F(v));
+      values.difficulty=difficulty;
+      return values;
+    });
   }
 
   function termX(a){
@@ -387,6 +539,29 @@ body{overflow-x:hidden}
     if(s.a.isOne() && s.b.isZero() && s.c.isZero()) return true;
     if(s.c.isOne() && s.d.isZero() && s.a.isZero()) return true;
     return false;
+  }
+
+  function minimumMovesFor(s){
+    if(solved(s)) return 0;
+    if(s.a.eq(s.c)) return Infinity;
+    const leftCoeff=s.a.sub(s.c);
+    let left=0;
+    if(!s.c.isZero()) left++;
+    if(!s.b.isZero()) left++;
+    if(!leftCoeff.isOne()) left++;
+    const rightCoeff=s.c.sub(s.a);
+    let right=0;
+    if(!s.a.isZero()) right++;
+    if(!s.d.isZero()) right++;
+    if(!rightCoeff.isOne()) right++;
+    return Math.min(left,right);
+  }
+
+  function updateMoveCounter(){
+    const moves=Math.max(0,history.length-1);
+    minMoveText.textContent=`אפשר לפתור ב־${currentMinMoves} ${currentMinMoves===1?'מהלך':'מהלכים'}`;
+    moveCounter.innerHTML=`מהלכים: <strong>${moves}</strong> / ${currentMinMoves}`;
+    moveCounter.classList.toggle('over',moves>currentMinMoves);
   }
 
   function solutionValue(s){
@@ -480,7 +655,7 @@ body{overflow-x:hidden}
 
   function showFeedback(ok,msg){
     feedback.textContent=msg;
-    feedback.className='feedback show '+(ok?'good':'bad');
+    feedback.className='feedback show '+(ok===true?'good':ok==='warn'?'warn':'bad');
   }
 
   function renderSteps(){
@@ -503,25 +678,30 @@ body{overflow-x:hidden}
 
   function startQuestion(){
     awaitingNext=false;
-    q('nextRow').hidden=true;
+    q('nextRow').classList.remove('visible');
+    q('nextRow').setAttribute('aria-hidden','true');
     q('executeBtn').disabled=false;
     opInput.disabled=false;
     const row=game[idx];
     state={a:row[0],b:row[1],c:row[2],d:row[3]};
     history=[state];
     actions=[null];
+    currentMinMoves=minimumMovesFor(state);
     equationEl.textContent=equationText(state);
     opInput.value='';
     feedback.className='feedback';
     equationHadError=false;
     renderSteps();
+    updateMoveCounter();
 
     const pct=Math.round((idx/TOTAL)*100);
     progressText.textContent=`משוואה ${idx+1} מתוך ${TOTAL}`;
     progressFill.style.width=pct+'%';
     progressPct.textContent=pct+'%';
 
-    questionStart=performance.now();
+    const now=performance.now();
+    questionStart=now;            // נשמר רק לצורך זמן המשוואה הבודדת
+    activeSegmentStart=now;       // הזמן הכולל ממשיך מהנקודה שבה נעצר
     clearInterval(timerInt);
     timerInt=setInterval(updateTimer,200);
     updateTimer();
@@ -537,17 +717,30 @@ body{overflow-x:hidden}
     return sec<60?`${sec.toFixed(1)} שנ׳`:fmtTime(sec);
   }
 
+  function activeGameSeconds(){
+    const running=activeSegmentStart!==null ? (performance.now()-activeSegmentStart) : 0;
+    return (activeElapsedMs+running)/1000;
+  }
+
   function updateTimer(){
-    const sec=(performance.now()-questionStart)/1000;
-    currentTimeEl.textContent=fmtTime(sec);
+    currentTimeEl.textContent=fmtTime(activeGameSeconds());
   }
 
   function finishQuestion(){
     clearInterval(timerInt);
-    const sec=(performance.now()-questionStart)/1000;
+    const now=performance.now();
+    const sec=(now-questionStart)/1000; // זמן המשוואה הנוכחית בלבד
+    if(activeSegmentStart!==null){
+      activeElapsedMs += now-activeSegmentStart;
+      activeSegmentStart=null;
+    }
+    currentTimeEl.textContent=fmtTime(activeElapsedMs/1000); // הזמן הכולל קופא בזמן הלמידה
     times.push(sec);
 
-    if(!equationHadError){streak++;bestStreak=Math.max(bestStreak,streak)} else streak=0;
+    const movesUsed=Math.max(0,history.length-1);
+    const solvedOptimally=movesUsed===currentMinMoves;
+    if(solvedOptimally) optimalCount++;
+    if(solvedOptimally && !equationHadError){streak++;bestStreak=Math.max(bestStreak,streak)} else streak=0;
     streakEl.textContent=streak;
 
     const fastest=Math.min(...times);
@@ -557,12 +750,28 @@ body{overflow-x:hidden}
       bestEver=fastest;localStorage.setItem('prismindEquationBest',String(bestEver));
     }
 
-    showFeedback(true,`נפתר! זמן: ${fmtPrecise(sec)}`);
-    if(idx+1<TOTAL) playSound('correct');
+    const reviewNote=' הזמן נעצר — אפשר לעבור על כל שלבי הפתרון לפני שממשיכים.';
+    if(solvedOptimally){
+      showFeedback(true,`מצוין! פתרת במינימום של ${currentMinMoves} ${currentMinMoves===1?'מהלך':'מהלכים'}. זמן: ${fmtPrecise(sec)}.${reviewNote}`);
+    } else {
+      showFeedback('warn',`נפתר ב־${movesUsed} מהלכים. אפשר היה לפתור ב־${currentMinMoves}. זמן: ${fmtPrecise(sec)}.${reviewNote}`);
+    }
+    playSound('correct');
     q('executeBtn').disabled=true;
     opInput.disabled=true;
-    if(idx+1>=TOTAL) finishGame();
-    else {awaitingNext=true;q('nextRow').hidden=false;q('nextQuestion').focus();}
+
+    // Never advance automatically. The learner decides when to continue after reviewing the solution.
+    awaitingNext=true;
+    q('nextRow').classList.add('visible');
+    q('nextRow').setAttribute('aria-hidden','false');
+    const isLast=idx+1>=TOTAL;
+    q('nextQuestionText').textContent=isLast?'לסיכום המשחק':'לתרגיל הבא';
+    q('nextQuestion').setAttribute('aria-label',isLast?'לסיכום המשחק':'לתרגיל הבא');
+    q('nextQuestion').title=isLast?'לסיכום המשחק':'לתרגיל הבא';
+    requestAnimationFrame(()=>{
+      q('nextRow').scrollIntoView({behavior:'smooth',block:'center'});
+      window.setTimeout(()=>q('nextQuestion').focus({preventScroll:true}),180);
+    });
   }
 
   function execute(){
@@ -589,7 +798,15 @@ body{overflow-x:hidden}
     equationEl.textContent=equationText(state);
     opInput.value='';
     renderSteps();
-    showFeedback(true,'צעד תקין.');
+    updateMoveCounter();
+    const movesUsed=history.length-1;
+    if(!solved(state) && movesUsed>=currentMinMoves){
+      showFeedback('warn',movesUsed===currentMinMoves
+        ?`הצעד תקין, אבל כבר הגעת ל־${currentMinMoves} מהלכים ועדיין לא פתרת. מכאן הפתרון כבר לא יהיה מינימלי.`
+        :`הצעד תקין, אבל ביצעת כבר ${movesUsed} מהלכים. אפשר לפתור את המשוואה ב־${currentMinMoves}.`);
+    } else {
+      showFeedback(true,'צעד תקין.');
+    }
 
     if(solved(state)) finishQuestion();
     else opInput.focus();
@@ -597,13 +814,19 @@ body{overflow-x:hidden}
 
   function finishGame(){
     clearInterval(timerInt);
+    if(activeSegmentStart!==null){
+      activeElapsedMs += performance.now()-activeSegmentStart;
+      activeSegmentStart=null;
+    }
+    currentTimeEl.textContent=fmtTime(activeElapsedMs/1000);
     raceStarted=false;
     awaitingNext=false;
-    q('nextRow').hidden=true;
+    q('nextRow').classList.remove('visible');
+    q('nextRow').setAttribute('aria-hidden','true');
     const completed=times.length;
     const pct=Math.round((completed/TOTAL)*100);
     progressFill.style.width=pct+'%';progressPct.textContent=pct+'%';progressText.textContent=`נפתרו ${completed} מתוך ${TOTAL} משוואות`;
-    const total=times.reduce((a,b)=>a+b,0);
+    const total=activeElapsedMs/1000;
     const avg=completed?total/completed:0;
     const fastest=completed?Math.min(...times):0;
 
@@ -624,9 +847,10 @@ body{overflow-x:hidden}
     q('totalTime').textContent=fmtTime(total);
     q('avgTime').textContent=completed?fmtPrecise(avg).replace(' שנ׳','s'):'—';
     q('fastestTime').textContent=completed?fmtPrecise(fastest).replace(' שנ׳','s'):'—';
+    q('optimalCount').textContent=`${optimalCount}/${completed}`;
     q('mistakes').textContent=errors;
     q('resultTitle').textContent=completed===TOTAL?(errors===0?'מרוץ מושלם!':'סיימת את המרוץ!'):'סיימת את המשחק';
-    q('resultText').textContent=`פתרת ${completed} מתוך ${TOTAL} משוואות. ${comparison}`;
+    q('resultText').textContent=`פתרת ${completed} מתוך ${TOTAL} משוואות. ${optimalCount} מהן נפתרו במינימום מהלכים. ${comparison}`;
     q('overlay').classList.add('show');
     if(completed===TOTAL) playSound('finish');
   }
@@ -635,10 +859,13 @@ body{overflow-x:hidden}
     clearInterval(timerInt);
     raceStarted=false;
     awaitingNext=false;
-    q('nextRow').hidden=true;
+    q('nextRow').classList.remove('visible');
+    q('nextRow').setAttribute('aria-hidden','true');
     q('executeBtn').disabled=false;
     opInput.disabled=false;
-    game=makeGame();idx=0;times=[];errors=0;streak=0;bestStreak=0;equationHadError=false;
+    game=makeGame();idx=0;times=[];errors=0;streak=0;bestStreak=0;equationHadError=false;optimalCount=0;currentMinMoves=0;
+    activeElapsedMs=0;
+    activeSegmentStart=null;
     streakEl.textContent='0';
     currentTimeEl.textContent='00:00';
     bestTimeEl.textContent=bestEver?fmtTime(bestEver):'--:--';
@@ -647,6 +874,9 @@ body{overflow-x:hidden}
     stepsEl.innerHTML='';
     actions=[];
     equationEl.textContent='3x + 5 = 20';
+    minMoveText.textContent='אפשר לפתור במינימום מהלכים';
+    moveCounter.innerHTML='מהלכים: <strong>0</strong>';
+    moveCounter.classList.remove('over');
     opInput.value='';
     progressText.textContent='משוואה 1 מתוך 12';
     progressFill.style.width='0%';
@@ -704,7 +934,12 @@ body{overflow-x:hidden}
   q('home').addEventListener('click',prepareRace);
   q('resultHome').addEventListener('click',prepareRace);
   q('finish').addEventListener('click',()=>{if(raceStarted)finishGame()});
-  q('nextQuestion').addEventListener('click',()=>{if(!awaitingNext)return;idx++;startQuestion()});
+  q('nextQuestion').addEventListener('click',()=>{
+    if(!awaitingNext)return;
+    if(idx+1>=TOTAL){ finishGame(); return; }
+    idx++;
+    startQuestion(); // הזמן הכולל ממשיך מהערך שבו נעצר; רק מקטע העבודה החדש מתחיל כאן.
+  });
   q('again').addEventListener('click',prepareRace);
   q('startRaceBtn').addEventListener('click',startRace);
 

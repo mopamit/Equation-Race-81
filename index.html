@@ -104,6 +104,23 @@ body{overflow-x:hidden}
 .steps{max-width:850px;margin:0 auto;display:flex;flex-direction:column;gap:9px}
 .step{position:relative;background:#eff5fb;border:1px solid #cfe0f1;border-radius:14px;padding:12px 56px 12px 18px;font-family:Georgia,'Times New Roman',serif;font-size:29px;text-align:center;direction:ltr;unicode-bidi:isolate;color:#12345f}
 .step.good{background:#edf8ef;border-color:#c4e1ca}
+/* הפעולה כתובה בצד המשוואה, באותה שורה: x − 8 = 4  / +8 */
+.step{display:flex;align-items:center;justify-content:center;gap:18px}
+.stepOp{direction:ltr;unicode-bidi:isolate;color:var(--burg);font-weight:700;font-size:.85em;white-space:nowrap;margin-left:1.1em}
+.stepOp .slash{color:#8a97a6;margin-right:6px}
+/* שבר בנוי: מונה מעל מכנה */
+.frac{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;font-size:.72em;line-height:1.05;margin:0 .08em}
+.frac>span:first-child{border-bottom:.08em solid currentColor;padding:0 .12em}
+.frac>span:last-child{padding:0 .12em}
+.solutionBox{display:none;max-width:680px;margin:16px auto 4px;padding:16px 20px;background:#edf8ef;border:2px solid #6db580;border-radius:18px;text-align:center}
+.solutionBox.show{display:block}
+.solutionMain{font-family:Georgia,'Times New Roman',serif;font-size:38px;font-weight:700;color:#1f5f35;direction:ltr;unicode-bidi:isolate}
+.solutionMain .check{color:#3c8152;margin-left:12px}
+.solutionMeta{margin-top:6px;font-size:17px;font-weight:700;color:#2f6b40}
+.solutionCheck{margin-top:8px;font-size:17px;font-weight:700;color:#2f6b40}
+.solutionCheck .m{font-family:Georgia,'Times New Roman',serif;direction:ltr;unicode-bidi:isolate;font-size:22px;color:#17365e;white-space:nowrap}
+.stepCounter{display:inline-block;background:#f5f8fb;border:1px solid #dbe5ee;border-radius:12px;padding:6px 13px;color:var(--blue);font-size:16px;font-weight:800}
+.stepCounter strong{font-size:19px;color:var(--burg)}
 .stepNum{position:absolute;right:15px;top:50%;transform:translateY(-50%);width:32px;height:32px;border-radius:50%;background:#d9e6f3;color:#58738e;display:grid;place-items:center;font-family:'SimplerPro';font-size:16px;font-weight:900}
 .arrow{text-align:center;font-size:28px;color:#8aa2ba;line-height:.8}
 .feedback{min-height:32px;margin-top:14px;text-align:center;font-size:17px;font-weight:800;opacity:0;transition:.2s}
@@ -163,7 +180,7 @@ body{overflow-x:hidden}
   .statCard{margin:0;padding:9px 6px} .statIcon img{width:30px;height:30px} .statLabel{font-size:13px} .statValue{font-size:22px} .tipCard{display:none}
   .workPanel{padding:18px 12px;min-height:500px} .equation{font-size:45px} .instruction{font-size:18px}
   .operationRow{gap:8px} .opInput{width:170px;font-size:24px} .actionBtn{width:86px;height:42px;font-size:17px}
-  .step{font-size:24px;padding-right:45px} .keyboardPanel{padding:10px} .keyboard{grid-template-columns:repeat(5,1fr);gap:7px} .key{min-height:48px}
+  .step{font-size:24px;padding-right:45px} .solutionMain{font-size:30px} .keyboardPanel{padding:10px} .keyboard{grid-template-columns:repeat(5,1fr);gap:7px} .key{min-height:48px}
 }
 </style>
 </head>
@@ -174,7 +191,7 @@ body{overflow-x:hidden}
     <div class="logoWrap"><img class="logo" src="assets/LOGO%20Prisming.svg" alt="Prisming"></div>
     <div class="headerCenter">
       <h1 class="title">מרוץ המשוואות</h1>
-      <p class="subtitle">פותרים משוואות במהירות – ובמספר המהלכים הקטן ביותר</p>
+      <p class="subtitle">פותרים משוואות צעד אחר צעד – ומשפרים את הזמן האישי</p>
     </div>
     <div class="headerActions">
       <button id="soundToggle" class="artBtn soundBtn" aria-label="השתק צלילים" title="השתק צלילים" aria-pressed="true"><img src="assets/speaker_circle.svg" alt=""></button>
@@ -203,17 +220,17 @@ body{overflow-x:hidden}
       </div>
       <div class="statCard streak">
         <div class="statIcon"><img src="assets/streak_flame_circle.svg" alt=""></div>
-        <div class="statLabel">רצף פתרונות יעילים</div>
+        <div class="statLabel">רצף ללא טעות</div>
         <div id="streak" class="statValue">0</div>
       </div>
-      <div class="tipCard">המטרה: לפתור מהר, אבל גם בדרך הקצרה והיעילה ביותר.</div>
+      <div class="tipCard">כל משוואה שנפתרת בלי פעולה שגויה מאריכה את הרצף.</div>
     </aside>
 
     <section class="mainCol">
       <div class="workPanel">
         <div class="equationBox">
           <div id="equation" class="equation">3x + 5 = 20</div>
-          <div class="efficiencyRow"><div id="minMoveText" class="minMoveText">אפשר לפתור ב־2 מהלכים</div><div id="moveCounter" class="moveCounter">מהלכים: <strong>0</strong> / 2</div></div>
+          <div class="efficiencyRow"><div id="moveCounter" class="stepCounter">צעדים: <strong>0</strong></div></div>
           <div class="instruction">איזו פעולה מבצעים על שני האגפים?</div>
           <div class="operationRow">
             <input id="opInput" class="opInput" autocomplete="off" inputmode="text" placeholder="−5">
@@ -223,14 +240,14 @@ body{overflow-x:hidden}
     <strong class="mathLtr">−5</strong>,
     <strong class="mathLtr">+3</strong>,
     <strong class="mathLtr">−2x</strong>,
-    <strong class="mathLtr">/3</strong>,
     <strong class="mathLtr">:3</strong>
     או
-    <strong class="mathLtr">×2</strong>
+    <strong class="mathLtr">·2</strong>
     </div>
         </div>
 
         <div id="feedback" class="feedback"></div>
+        <div id="solutionBox" class="solutionBox" role="status" aria-live="polite"></div>
         <div id="nextRow" class="nextRow" aria-hidden="true">
           <div class="nextSolvedText">
             <strong>התרגיל נפתר — הזמן נעצר</strong>
@@ -248,16 +265,16 @@ body{overflow-x:hidden}
         <div class="keyboardTitle">מקלדת מתמטית</div>
         <div id="keyboard" class="keyboard">
           <button class="key" data-k="7">7</button><button class="key" data-k="8">8</button><button class="key" data-k="9">9</button>
-          <button class="key" data-k="+">+</button><button class="key" data-k="-">−</button><button class="key" data-k="*">×</button>
-          <button class="key" data-k="/">÷</button><button class="key" data-k="(">(</button><button class="key" data-k=")">)</button>
+          <button class="key" data-k="+">+</button><button class="key" data-k="-">−</button><button class="key" data-k="·" aria-label="כפל">·</button>
+          <button class="key" data-k="/" aria-label="קו שבר">/</button><button class="key" data-k="(">(</button><button class="key" data-k=")">)</button>
           <button class="key action" data-action="back">⌫</button>
           <button class="key" data-k="4">4</button><button class="key" data-k="5">5</button><button class="key" data-k="6">6</button>
-          <button class="key" data-k=":">:</button><button class="key" data-k=".">.</button><button class="key" data-k="x">x</button>
+          <button class="key" data-k=":" aria-label="חילוק">:</button><button class="key" data-k="x">x</button>
           <button class="key clear" data-action="clear">נקה</button><button class="key confirm" data-action="confirm">אישור</button>
           <button class="key" data-k="1">1</button><button class="key" data-k="2">2</button><button class="key" data-k="3">3</button>
           <button class="key" data-k="0">0</button>
         </div>
-        <div class="footerGoal">המטרה: לפתור 12 משוואות מהר ובמינימום מהלכים</div>
+        <div class="footerGoal">המטרה: לפתור 12 משוואות ולשפר את הזמן האישי</div>
       </div>
     </section>
   </main>
@@ -274,14 +291,15 @@ body{overflow-x:hidden}
       <strong class="mathLtr">−5</strong>,
       <strong class="mathLtr">+3</strong>,
       <strong class="mathLtr">−2x</strong>,
-      <strong class="mathLtr">/3</strong>
+      <strong class="mathLtr">:3</strong>
       או
-      <strong class="mathLtr">×2</strong>.
+      <strong class="mathLtr">·2</strong>
+      (כפל בנקודה, חילוק בנקודתיים; שבר כותבים עם קו נטוי, למשל <strong class="mathLtr">·1/2</strong>).
       </li>
       <li>אחרי כל פעולה נכונה המחשב יציג את <strong>השלב הבא בפתרון</strong>.</li>
-      <li>לכל משוואה יוצג <strong>מספר המהלכים המינימלי</strong> שבו אפשר לפתור אותה.</li>
-      <li>פעולה אלגברית חוקית לא תיחשב טעות, אבל אם תבחר דרך ארוכה יותר המשחק יציין שאפשר היה לפתור בפחות מהלכים.</li>
-      <li>המטרה היא לפתור <strong>12 משוואות</strong> גם מהר וגם בדרך היעילה ביותר.</li>
+      <li>כשהמשוואה נפתרת, הזמן נעצר ומופיעים <strong>הפתרון</strong> ו<strong>בדיקה בהצבה</strong>. ממשיכים רק כשמוכנים.</li>
+      <li><strong>רצף</strong> (אייקון הלהבה): כמה משוואות ברצף נפתרו בלי אף פעולה שגויה.</li>
+      <li>המטרה היא לפתור <strong>12 משוואות</strong> ולשפר את הזמן האישי.</li>
       <li>הזמן יתחיל רק כשתלחץ על <strong>„התחל מרוץ”</strong>.</li>
     </ul>
     <button id="startRaceBtn" class="artBtn startBtn" aria-label="התחל מרוץ"><img src="assets/button_start_rect.svg" alt=""></button>
@@ -298,7 +316,7 @@ body{overflow-x:hidden}
       <div class="resultStat"><strong id="totalTime">00:00</strong>זמן כולל</div>
       <div class="resultStat"><strong id="avgTime">00:00</strong>ממוצע</div>
       <div class="resultStat"><strong id="fastestTime">00:00</strong>הכי מהיר</div>
-      <div class="resultStat"><strong id="optimalCount">0</strong>במינימום מהלכים</div>
+      <div class="resultStat"><strong id="optimalCount">0</strong>בלי טעות</div>
       <div class="resultStat"><strong id="mistakes">0</strong>טעויות</div>
     </div>
     <div class="resultActions">
@@ -332,6 +350,7 @@ body{overflow-x:hidden}
   const LEVELS = [
     // רמה 1 — 20 שאלות
     [
+      ['-1',5,0,9],[1,'1/2',0,3],[2,0,0,7],[4,0,0,2],[1,'-3/4',0,'1/4'],[-1,0,0,6],
       [1,3,0,7],
       [1,-4,0,3],
       [1,5,0,2],
@@ -355,6 +374,7 @@ body{overflow-x:hidden}
     ],
     // רמה 2 — 20 שאלות
     [
+      [2,1,0,6],[4,3,0,5],['1/2',3,0,7],['1/3',-2,0,4],[3,-1,0,7],[-1,7,0,-15],
       [2,5,0,17],
       [3,-7,0,14],
       [4,6,0,26],
@@ -378,6 +398,7 @@ body{overflow-x:hidden}
     ],
     // רמה 3 — 20 שאלות
     [
+      [-1,-3,0,10],[-2,3,0,8],['-1/2',1,0,4],[-3,2,0,0],[-1,-4,0,'1/2'],[-4,1,0,-6],
       [-2,5,0,17],
       [3,-7,0,-28],
       [-4,-6,0,-26],
@@ -401,6 +422,7 @@ body{overflow-x:hidden}
     ],
     // רמה 4 — 20 שאלות
     [
+      [3,'1/2',1,5],[5,-2,2,3],['2/3',1,'1/3',3],[4,1,1,-1],[6,-1,2,2],[-1,4,1,9],
       [3,4,2,9],
       [4,-2,3,5],
       [5,6,4,3],
@@ -424,6 +446,7 @@ body{overflow-x:hidden}
     ],
     // רמה 5 — 20 שאלות
     [
+      [-2,5,3,-1],['3/4',-2,'-1/4',5],[-1,'1/3',2,'-5/3'],[-5,2,1,'1/2'],[-3,-2,5,4],['-1/2',4,'1/2',-3],
       [-5,7,3,39],
       [7,-9,-2,45],
       [-8,11,-3,-14],
@@ -468,7 +491,7 @@ body{overflow-x:hidden}
   const q=id=>document.getElementById(id);
   const equationEl=q('equation'), stepsEl=q('steps'), feedback=q('feedback'), opInput=q('opInput');
   const currentTimeEl=q('currentTime'), bestTimeEl=q('bestTime'), streakEl=q('streak');
-  const minMoveText=q('minMoveText'), moveCounter=q('moveCounter');
+  const moveCounter=q('moveCounter');
   const progressText=q('progressText'), progressFill=q('progressFill'), progressPct=q('progressPct');
 
   function shuffle(a){const x=a.slice();for(let i=x.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[x[i],x[j]]=[x[j],x[i]]}return x}
@@ -486,28 +509,28 @@ body{overflow-x:hidden}
         if(!used.has(sig)){row=candidate;used.add(sig);break;}
       }
       if(!row) throw new Error('Question pool exhausted');
-      const values=row.map(v=>new F(v));
+      const values=row.map(v=>{ if(typeof v==='string'){ const [n,d]=v.split('/').map(Number); return new F(n,d); } return new F(v); });
       values.difficulty=difficulty;
       return values;
     });
   }
 
+  // שבר בנוי (מונה מעל מכנה); מספר שלם נשאר רגיל
+  function fracHTML(f){ return f.d===1 ? String(Math.abs(f.n)) : `<span class="frac"><span>${Math.abs(f.n)}</span><span>${f.d}</span></span>`; }
+  function numHTML(f){ return (f.n<0?'−':'')+fracHTML(f); }
   function termX(a){
     if(a.isZero()) return '';
     if(a.isOne()) return 'x';
     if(a.isMinusOne()) return '−x';
-    return `${a.text()}x`;
+    return `${a.n<0?'−':''}${fracHTML(a)}x`;
   }
 
   function sideText(a,b){
     const parts=[];
     if(!a.isZero()) parts.push(termX(a));
     if(!b.isZero()){
-      const bt=b.text();
-      if(parts.length){
-        if(b.n>0) parts.push(`+ ${bt}`);
-        else parts.push(`− ${new F(-b.n,b.d).text()}`);
-      } else parts.push(bt);
+      if(parts.length) parts.push(`${b.n>0?'+':'−'} ${fracHTML(b)}`);
+      else parts.push(numHTML(b));
     }
     return parts.length?parts.join(' '):'0';
   }
@@ -517,7 +540,7 @@ body{overflow-x:hidden}
   }
 
   function signedValueText(f, withX=false){
-    const abs = new F(Math.abs(f.n), f.d).text();
+    const abs = fracHTML(f);
     if(withX){
       if(f.n === 1 && f.d === 1) return '+x';
       if(f.n === -1 && f.d === 1) return '−x';
@@ -529,8 +552,10 @@ body{overflow-x:hidden}
   function operationDisplayText(op){
     if(op.type==='add') return signedValueText(op.value, false);
     if(op.type==='addx') return signedValueText(op.value, true);
-    if(op.type==='mul') return '×' + op.value.text();
-    if(op.type==='div') return '÷' + op.value.text();
+    // כפל בנקודה, חילוק בנקודתיים; מספר שלילי בסוגריים
+    const v = op.value.n<0 ? `(−${fracHTML(op.value)})` : fracHTML(op.value);
+    if(op.type==='mul') return '·' + v;
+    if(op.type==='div') return ':' + v;
     return '';
   }
 
@@ -559,11 +584,20 @@ body{overflow-x:hidden}
 
   function updateMoveCounter(){
     const moves=Math.max(0,history.length-1);
-    minMoveText.textContent=`אפשר לפתור ב־${currentMinMoves} ${currentMinMoves===1?'מהלך':'מהלכים'}`;
-    moveCounter.innerHTML=`מהלכים: <strong>${moves}</strong> / ${currentMinMoves}`;
-    moveCounter.classList.toggle('over',moves>currentMinMoves);
+    moveCounter.innerHTML=`צעדים: <strong>${moves}</strong>`;
   }
 
+  // הצבת הפתרון במשוואה המקורית: 3·5 + 5 = 20
+  function substHTML(a,b,v){
+    if(a.isZero()) return numHTML(b);
+    const vv = v.n<0 ? `(${numHTML(v)})` : numHTML(v);
+    let t;
+    if(a.isOne()) t=vv;
+    else if(a.isMinusOne()) t=`−${vv}`;
+    else t=`${numHTML(a)}·${vv}`;
+    if(!b.isZero()) t+=` ${b.n>0?'+':'−'} ${fracHTML(b)}`;
+    return t;
+  }
   function solutionValue(s){
     if(s.a.isOne() && s.b.isZero() && s.c.isZero()) return s.d;
     if(s.c.isOne() && s.d.isZero() && s.a.isZero()) return s.b;
@@ -590,7 +624,7 @@ body{overflow-x:hidden}
   }
 
   function parseOperation(raw){
-    let s=raw.replace(/\s+/g,'').replace(/−/g,'-').replace(/×/g,'*').replace(/÷/g,'/').replace(/:/g,'/');
+    let s=raw.replace(/\s+/g,'').replace(/−/g,'-').replace(/[×·⋅]/g,'*').replace(/÷/g,'/').replace(/:/g,'/').replace(/[()]/g,'');
     if(!s) return null;
 
     // +/- kx
@@ -661,15 +695,11 @@ body{overflow-x:hidden}
   function renderSteps(){
     stepsEl.innerHTML='';
     history.forEach((s,i)=>{
-      if(i>0){
-        const trans=document.createElement('div');
-        trans.className='transitionStep';
-        trans.innerHTML=`<span class="transitionArrow">↓</span><span class="transitionAction"><span>לשני האגפים:</span><span class="mathAction">${actions[i] || ''}</span></span><span class="transitionArrow">↓</span>`;
-        stepsEl.appendChild(trans);
-      }
       const d=document.createElement('div');
       d.className='step '+(i===history.length-1&&solved(s)?'good':'');
-      d.innerHTML=`<span class="stepNum">${i+1}</span>${equationText(s)}`;
+      const op=actions[i+1];   // הפעולה שבוצעה על המשוואה הזו
+      d.innerHTML=`<span class="stepNum">${i+1}</span><span class="stepEq">${equationText(s)}</span>`+
+        (op?`<span class="stepOp" aria-label="פעולה על שני האגפים"><span class="slash">/</span>${op}</span>`:'');
       stepsEl.appendChild(d);
     });
   }
@@ -687,9 +717,10 @@ body{overflow-x:hidden}
     history=[state];
     actions=[null];
     currentMinMoves=minimumMovesFor(state);
-    equationEl.textContent=equationText(state);
+    equationEl.innerHTML=equationText(state);
     opInput.value='';
     feedback.className='feedback';
+    q('solutionBox').className='solutionBox';
     equationHadError=false;
     renderSteps();
     updateMoveCounter();
@@ -738,9 +769,7 @@ body{overflow-x:hidden}
     times.push(sec);
 
     const movesUsed=Math.max(0,history.length-1);
-    const solvedOptimally=movesUsed===currentMinMoves;
-    if(solvedOptimally) optimalCount++;
-    if(solvedOptimally && !equationHadError){streak++;bestStreak=Math.max(bestStreak,streak)} else streak=0;
+    if(!equationHadError){ optimalCount++; streak++; bestStreak=Math.max(bestStreak,streak); } else streak=0;
     streakEl.textContent=streak;
 
     const fastest=Math.min(...times);
@@ -750,12 +779,19 @@ body{overflow-x:hidden}
       bestEver=fastest;localStorage.setItem('prismindEquationBest',String(bestEver));
     }
 
-    const reviewNote=' הזמן נעצר — אפשר לעבור על כל שלבי הפתרון לפני שממשיכים.';
-    if(solvedOptimally){
-      showFeedback(true,`מצוין! פתרת במינימום של ${currentMinMoves} ${currentMinMoves===1?'מהלך':'מהלכים'}. זמן: ${fmtPrecise(sec)}.${reviewNote}`);
-    } else {
-      showFeedback('warn',`נפתר ב־${movesUsed} מהלכים. אפשר היה לפתור ב־${currentMinMoves}. זמן: ${fmtPrecise(sec)}.${reviewNote}`);
-    }
+    // תיבת הפתרון: x = …, מספר הצעדים, ובדיקה בהצבה במשוואה המקורית
+    const v=solutionValue(state), o=history[0];
+    const L=o.a.mul(v).add(o.b), R=o.c.mul(v).add(o.d);
+    const left=substHTML(o.a,o.b,v), right=substHTML(o.c,o.d,v);
+    const bothConst=o.c.isZero();
+    const checkLine = bothConst
+      ? `<span class="m">${left} = ${numHTML(R)} ✓</span>`
+      : `<span class="m">${left} = ${right}</span><br><span class="m">${numHTML(L)} = ${numHTML(R)} ✓</span>`;
+    q('solutionBox').innerHTML=`<div class="solutionMain">x = ${numHTML(v)}<span class="check">✓</span></div>`+
+      `<div class="solutionMeta">נכון! פתרתם ב־${movesUsed} ${movesUsed===1?'צעד':'צעדים'} · זמן: ${fmtPrecise(sec)}</div>`+
+      `<div class="solutionCheck">בדיקה – מציבים <span class="m">x = ${numHTML(v)}</span> במשוואה המקורית:<br>${checkLine}</div>`;
+    q('solutionBox').className='solutionBox show';
+    feedback.className='feedback';
     playSound('correct');
     q('executeBtn').disabled=true;
     opInput.disabled=true;
@@ -780,7 +816,7 @@ body{overflow-x:hidden}
     const op=parseOperation(raw);
     if(!op){
       errors++;equationHadError=true;streak=0;streakEl.textContent='0';
-      showFeedback(false,'לא זיהיתי את הפעולה. נסו למשל: −5, −2x, /3 או ×2.');
+      showFeedback(false,'לא זיהיתי את הפעולה. נסו למשל: −5, −2x, :3 או ·2.');
       playSound('wrong');
       return;
     }
@@ -795,18 +831,11 @@ body{overflow-x:hidden}
     state=next;
     history.push(state);
     actions.push(operationDisplayText(op));
-    equationEl.textContent=equationText(state);
+    equationEl.innerHTML=equationText(state);
     opInput.value='';
     renderSteps();
     updateMoveCounter();
-    const movesUsed=history.length-1;
-    if(!solved(state) && movesUsed>=currentMinMoves){
-      showFeedback('warn',movesUsed===currentMinMoves
-        ?`הצעד תקין, אבל כבר הגעת ל־${currentMinMoves} מהלכים ועדיין לא פתרת. מכאן הפתרון כבר לא יהיה מינימלי.`
-        :`הצעד תקין, אבל ביצעת כבר ${movesUsed} מהלכים. אפשר לפתור את המשוואה ב־${currentMinMoves}.`);
-    } else {
-      showFeedback(true,'צעד תקין.');
-    }
+    showFeedback(true,'צעד תקין.');
 
     if(solved(state)) finishQuestion();
     else opInput.focus();
@@ -850,7 +879,7 @@ body{overflow-x:hidden}
     q('optimalCount').textContent=`${optimalCount}/${completed}`;
     q('mistakes').textContent=errors;
     q('resultTitle').textContent=completed===TOTAL?(errors===0?'מרוץ מושלם!':'סיימת את המרוץ!'):'סיימת את המשחק';
-    q('resultText').textContent=`פתרת ${completed} מתוך ${TOTAL} משוואות. ${optimalCount} מהן נפתרו במינימום מהלכים. ${comparison}`;
+    q('resultText').textContent=`פתרת ${completed} מתוך ${TOTAL} משוואות. ${optimalCount} מהן נפתרו בלי אף פעולה שגויה. רצף השיא: ${bestStreak}. ${comparison}`;
     q('overlay').classList.add('show');
     if(completed===TOTAL) playSound('finish');
   }
@@ -873,10 +902,9 @@ body{overflow-x:hidden}
     feedback.textContent='';
     stepsEl.innerHTML='';
     actions=[];
-    equationEl.textContent='3x + 5 = 20';
-    minMoveText.textContent='אפשר לפתור במינימום מהלכים';
-    moveCounter.innerHTML='מהלכים: <strong>0</strong>';
-    moveCounter.classList.remove('over');
+    equationEl.innerHTML='3x + 5 = 20';
+    moveCounter.innerHTML='צעדים: <strong>0</strong>';
+    q('solutionBox').className='solutionBox';
     opInput.value='';
     progressText.textContent='משוואה 1 מתוך 12';
     progressFill.style.width='0%';

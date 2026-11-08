@@ -188,6 +188,72 @@ body{overflow-x:hidden}
   .operationRow{gap:8px} .opInput{width:170px;font-size:24px} .actionBtn{width:86px;height:42px;font-size:17px}
   .step{font-size:24px;padding-right:45px} .solutionMain{font-size:30px} .keyboardPanel{padding:10px} .keyboard{gap:7px;grid-template-columns:repeat(3,1fr) 6px 1fr 1fr} .key{min-height:48px}
 }
+
+/* ===================== ערכת העיצוב "מרוץ" – עיצוב בלבד, התפקוד לא השתנה ===================== */
+html,body{background:#cfe9f7 url("assets/race/bg-main.webp") center bottom/cover fixed no-repeat}
+.app{background:transparent;position:relative}
+.app::before{content:"";position:absolute;inset:0 0 auto 0;height:16px;background:url("assets/race/strip.png") repeat-x;background-size:auto 16px;opacity:.9}
+.topbar{margin-top:10px;background:rgba(255,255,255,.86);border-radius:22px;padding:6px 16px;box-shadow:0 6px 20px rgba(23,54,94,.10)}
+.title{color:#8e2f5c}
+.statsPanel,.workPanel,.keyboardPanel{background:rgba(255,255,255,.90);backdrop-filter:blur(2px)}
+.statIcon img{width:54px;height:54px;object-fit:contain}
+.racerSide{display:block;width:78%;max-width:210px;height:auto;margin:10px auto 0}
+
+/* כפתורים מאוירים: הצורה מצוירת על הכפתור עצמו, הקצוות נשמרים בכל רוחב */
+.frameBtn>img,.actionBtn>img,.nextBtn>img{display:none}
+.frameBtn,.actionBtn,.nextBtn,.startBtn,.againBtn{border-style:solid;border-width:0;filter:drop-shadow(0 4px 8px rgba(23,54,94,.18))}
+.actionBtn,.nextBtn,.startBtn,.againBtn{border-image:url("assets/race/btn-primary.webp") 0 60 fill / 0 28px stretch}
+.frameBtn{border-image:url("assets/race/btn-secondary.webp") 0 60 fill / 0 26px stretch}
+.actionBtn{width:120px;height:52px}
+.actionBtn span,.frameBtn span{display:grid;place-items:center;padding-bottom:2px;text-shadow:0 1px 2px rgba(0,0,0,.35)}
+.nextBtn>span{text-shadow:0 1px 2px rgba(0,0,0,.35);padding:0 26px 2px}
+.startBtn,.againBtn{width:250px;height:68px;color:#fff;font-size:24px;font-weight:900}
+.startBtn span,.againBtn span{position:absolute;inset:0;display:grid;place-items:center;padding-bottom:2px;text-shadow:0 1px 2px rgba(0,0,0,.35)}
+.actionBtn:disabled{filter:grayscale(.4) drop-shadow(0 4px 8px rgba(23,54,94,.12))}
+
+/* פס ההתקדמות: מכונית שנוסעת אל דגל הסיום */
+.progressRow{background:rgba(255,255,255,.86);border-radius:18px;padding:8px 18px;width:fit-content}
+.progressTrack{position:relative;overflow:visible;height:14px;margin:0 40px;background:#5d6672;border:2px solid #3d4550;
+  background-image:repeating-linear-gradient(90deg,#fff 0 14px,transparent 14px 32px);background-size:100% 2px;background-position:center;background-repeat:no-repeat}
+.progressFill{position:relative;overflow:visible;background:linear-gradient(90deg,#e8382b,#c41d1d)}
+.progressCar{position:absolute;top:50%;left:-34px;width:68px;height:auto;transform:translateY(-58%);pointer-events:none;filter:drop-shadow(0 2px 2px rgba(0,0,0,.3))}
+.progressFlag{position:absolute;left:-30px;bottom:2px;height:40px;width:auto;pointer-events:none}
+
+/* אזור השאלה */
+.equationBox{position:relative}
+.qDeco{position:absolute;top:-10px;left:-6px;width:110px;height:auto;pointer-events:none}
+
+/* פתרון: סרט ההצלחה במקום המסגרת הירוקה */
+.solutionBox{background:rgba(255,255,255,.94);border:2px solid #cfe5d4;padding:6px 20px 14px}
+.solutionMain{background:url("assets/race/banner.webp") center/contain no-repeat;color:#fff;min-height:118px;padding:30px 0 40px;text-shadow:0 2px 3px rgba(0,0,0,.35)}
+.solutionMain .check{color:#fff6b8}
+.nextRow{background:rgba(255,255,255,.94);border-color:#e8382b}
+
+/* מקלדת: מקשים מאוירים */
+.key{border:0;border-style:solid;border-width:0;border-image:url("assets/race/key.webp") 50 50 62 50 fill / 14px 14px 17px 14px stretch;background:transparent!important;box-shadow:none;padding-bottom:6px;border-radius:0}
+.key:hover{filter:brightness(1.04);transform:translateY(-1px)}
+.key:active{transform:translateY(1px)}
+.key.confirm{border-image:url("assets/race/btn-primary.webp") 0 60 fill / 0 28px stretch;color:#fff;padding-bottom:2px;text-shadow:0 1px 2px rgba(0,0,0,.35)}
+
+/* מסך פתיחה וסיום */
+.introOverlay{background:#7ec8ef url("assets/race/bg-intro.webp") center/cover no-repeat}
+.introCard{background:rgba(255,255,255,.93);border:3px solid #17365e;position:relative}
+.introCard::before{content:"";position:absolute;inset:0 0 auto 0;height:14px;border-radius:25px 25px 0 0;background:url("assets/race/strip.png") repeat-x;background-size:auto 14px}
+.introIcon img{width:130px;height:auto}
+.introRacer{position:absolute;right:max(10px,calc(50% - 650px));bottom:4%;height:min(62vh,440px);width:auto;pointer-events:none}
+.overlay{background:#6a3fb0 url("assets/race/bg-end.webp") center/cover no-repeat}
+.resultCard{background:rgba(255,255,255,.94);border:3px solid #17365e;position:relative}
+.resultIcon img{width:110px;height:auto}
+@media(max-width:1100px){.introRacer{display:none}}
+@media(max-width:760px){
+  .racerSide,.qDeco{display:none}
+  .progressRow{width:auto;flex-wrap:wrap;row-gap:14px;padding-top:6px}
+  .progressTrack{order:3;flex:1 0 100%;width:auto;max-width:none;margin:6px 30px 4px}
+  .progressCar{width:50px;left:-25px}
+  .progressFlag{height:30px;left:-24px}
+  .actionBtn{width:96px;height:46px}
+  .statIcon img{width:34px;height:34px}
+}
 </style>
 </head>
 <body>
@@ -208,33 +274,35 @@ body{overflow-x:hidden}
 
   <div class="progressRow">
     <div id="progressText" class="progressText">משוואה 1 מתוך 12</div>
-    <div class="progressTrack"><div id="progressFill" class="progressFill"></div></div>
+    <div class="progressTrack"><div id="progressFill" class="progressFill"><img class="progressCar" src="assets/race/car.webp" alt=""></div><img class="progressFlag" src="assets/race/flag.webp" alt=""></div>
     <div id="progressPct" class="progressPct">0%</div>
   </div>
 
   <main class="layout">
     <aside class="statsPanel">
       <div class="statCard time">
-        <div class="statIcon"><img src="assets/clock_circle.svg" alt=""></div>
+        <div class="statIcon"><img src="assets/race/stopwatch.webp" alt=""></div>
         <div class="statLabel">זמן כולל</div>
         <div id="currentTime" class="statValue">00:00</div>
       </div>
       <div class="statCard best">
-        <div class="statIcon"><img src="assets/trophy_circle.svg" alt=""></div>
+        <div class="statIcon"><img src="assets/race/trophy.webp" alt=""></div>
         <div class="statLabel">המשוואה המהירה ביותר</div>
         <div id="bestTime" class="statValue">--:--</div>
       </div>
       <div class="statCard streak">
-        <div class="statIcon"><img src="assets/streak_flame_circle.svg" alt=""></div>
+        <div class="statIcon"><img src="assets/race/flame.webp" alt=""></div>
         <div class="statLabel">רצף ללא טעות</div>
         <div id="streak" class="statValue">0</div>
       </div>
       <div class="tipCard">כל משוואה שנפתרת בלי פעולה שגויה מאריכה את הרצף.</div>
+      <img class="racerSide" src="assets/race/racer.webp" alt="">
     </aside>
 
     <section class="mainCol">
       <div class="workPanel">
         <div class="equationBox">
+          <img class="qDeco" src="assets/race/deco.webp" alt="">
           <div id="equation" class="equation">3x + 5 = 20</div>
           <div class="efficiencyRow"><div id="moveCounter" class="stepCounter">צעדים: <strong>0</strong></div></div>
           <div class="instruction">איזו פעולה מבצעים על שני האגפים?</div>
@@ -274,10 +342,10 @@ body{overflow-x:hidden}
           <button class="key op" data-k=":" aria-label="חילוק">:</button><button class="key action" data-action="back" aria-label="מחק תו">⌫</button>
 
           <button class="key" data-k="4">4</button><button class="key" data-k="5">5</button><button class="key" data-k="6">6</button><span class="gap"></span>
-          <button class="key op" data-k="·" aria-label="כפל">·</button><button class="key op" data-k="(" aria-label="סוגר פותח">(</button>
+          <button class="key op" data-k="·" aria-label="כפל">·</button><button class="key op" data-k="(" aria-label="סוגר פותח"><bdo dir="ltr">(</bdo></button>
 
           <button class="key" data-k="1">1</button><button class="key" data-k="2">2</button><button class="key" data-k="3">3</button><span class="gap"></span>
-          <button class="key op" data-k="-" aria-label="מינוס">−</button><button class="key op" data-k=")" aria-label="סוגר סוגר">)</button>
+          <button class="key op" data-k="-" aria-label="מינוס">−</button><button class="key op" data-k=")" aria-label="סוגר סוגר"><bdo dir="ltr">)</bdo></button>
 
           <button class="key" data-k="0">0</button><button class="key" data-k="x">x</button><button class="key op" data-k="/" aria-label="קו שבר">/</button><span class="gap"></span>
           <button class="key op" data-k="+" aria-label="פלוס">+</button><button class="key action" data-action="clear">נקה</button>
@@ -291,8 +359,9 @@ body{overflow-x:hidden}
 </div>
 
 <div id="introOverlay" class="introOverlay">
+  <img class="introRacer" src="assets/race/racer.webp" alt="">
   <div class="introCard">
-    <div class="introIcon"><img src="assets/play_circle.svg" alt=""></div>
+    <div class="introIcon"><img src="assets/race/deco.webp" alt=""></div>
     <div class="introTitle">מרוץ המשוואות</div>
     <div class="introSub">לפני שמתחילים – כך משחקים</div>
     <ul class="introList">
@@ -312,14 +381,14 @@ body{overflow-x:hidden}
       <li>המטרה היא לפתור <strong>12 משוואות</strong> ולשפר את הזמן האישי.</li>
       <li>הזמן יתחיל רק כשתלחץ על <strong>„התחל מרוץ”</strong>.</li>
     </ul>
-    <button id="startRaceBtn" class="artBtn startBtn" aria-label="התחל מרוץ"><img src="assets/button_start_rect.svg" alt=""></button>
+    <button id="startRaceBtn" class="artBtn startBtn" aria-label="התחל מרוץ"><span>התחל מרוץ</span></button>
     <div class="introMini">אפשר לחזור למסך הבית או לסיים את המשחק מהכפתורים למעלה.</div>
   </div>
 </div>
 
 <div id="overlay" class="overlay">
   <div class="resultCard">
-    <div class="resultIcon"><img src="assets/trophy_circle.svg" alt=""></div>
+    <div class="resultIcon"><img src="assets/race/trophy.webp" alt=""></div>
     <div id="resultTitle" class="resultTitle">סיימת את המרוץ!</div>
     <p id="resultText" class="resultText"></p>
     <div class="resultGrid">
@@ -330,7 +399,7 @@ body{overflow-x:hidden}
       <div class="resultStat"><strong id="mistakes">0</strong>טעויות</div>
     </div>
     <div class="resultActions">
-      <button id="again" class="artBtn againBtn" aria-label="התחל מחדש"><img src="assets/button_restart_rect.svg" alt=""></button>
+      <button id="again" class="artBtn againBtn" aria-label="התחל מחדש"><span>מרוץ חדש</span></button>
       <button id="resultHome" class="artBtn homeBtn" aria-label="חזרה למסך הבית" title="מסך הבית"><img src="assets/home_circle.svg" alt=""></button>
     </div>
   </div>
